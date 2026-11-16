@@ -1,0 +1,19 @@
+{
+    "name": "Evermeadow.Core.CharacterController.Unity",
+    "rootNamespace": "Evermeadow.Core.CharacterController.Unity",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Foundation.Input",
+        "Evermeadow.Core.CharacterController"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

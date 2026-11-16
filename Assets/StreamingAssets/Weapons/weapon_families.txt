@@ -1,0 +1,7 @@
+# Weapon families offered by the Moveset Tool (one per line, [a-z0-9._], '#' = comment).
+# Defaults = the five animation families of the art bible; the Weapon Tree GDD will set the real list.
+crescent
+slab
+needle
+ring
+chain

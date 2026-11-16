@@ -1,0 +1,17 @@
+{
+    "name": "Evermeadow.Core.AI",
+    "rootNamespace": "Evermeadow.Core.AI",
+    "references": [
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Core.Skills"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

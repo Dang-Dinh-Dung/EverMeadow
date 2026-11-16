@@ -1,0 +1,14 @@
+{
+    "name": "Evermeadow.Presentation.Vfx",
+    "rootNamespace": "Evermeadow.Presentation.Vfx",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

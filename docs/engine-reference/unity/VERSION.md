@@ -3,11 +3,11 @@
 | Field | Value |
 |-------|-------|
 | **Engine Version** | Unity 6.3 LTS |
-| **Installed at pin time** | NOT DETERMINED — `/setup-engine` §3 probes the installed editor and records the result here. |
+| **Installed at pin time** | 6000.3.27f1 — matches the pin (probed 2026-10-24: `D:/Unity/Unity Hub/Unity/Hub/Editor/6000.3.27f1/Editor/Unity.exe`; 6000.0.58f2 also installed, unused) |
 | **Release Date** | December 2025 |
-| **Latest editor on the pinned line** | 6000.3.26f1 (Oct 8, 2026) |
+| **Latest editor on the pinned line** | 6000.3.27f1 (Oct 20, 2026) |
 | **Project Pinned** | 2026-02-13 |
-| **Last Docs Verified** | 2026-10-17 (release timeline, newer releases, latest 6.3 LTS editor); 2026-02-13 (rest of directory) |
+| **Last Docs Verified** | 2026-10-24 (latest 6.3 LTS editor, via release API); 2026-10-17 (release timeline, newer releases); 2026-02-13 (rest of directory) |
 | **LLM Knowledge Cutoff** | May 2025 |
 
 ## Knowledge Gap Warning

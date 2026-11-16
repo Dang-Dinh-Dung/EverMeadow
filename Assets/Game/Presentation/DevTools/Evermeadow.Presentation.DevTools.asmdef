@@ -1,0 +1,24 @@
+{
+    "name": "Evermeadow.Presentation.DevTools",
+    "rootNamespace": "Evermeadow.Presentation.DevTools",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Foundation.Input",
+        "Evermeadow.Foundation.Input.Unity",
+        "Evermeadow.Core.CharacterController",
+        "Evermeadow.Core.Skills",
+        "Evermeadow.Core.Moveset",
+        "Evermeadow.Presentation.Vfx.Unity",
+        "Evermeadow.Presentation.SkillRuntime.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

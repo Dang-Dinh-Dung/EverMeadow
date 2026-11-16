@@ -1,0 +1,7 @@
+# PROTOTYPE - NOT FOR PRODUCTION -- day-loop telemetry
+# written 2026-10-28 23:34:01  session 6.5 min  final=True
+day,end,realSec,secHome,secWilds,visitedWilds,visitedDeep,minHpWilds,potions,meals,fertilizer,forge,planted,harvested,brewed,cooked,slimeKills,bruteKills,ore,bone,linked,farmSkipped,huntSkipped
+1,Defeated,67,41,20,True,True,3,0,0,0,0,4,0,0,0,4,0,1,4,False,False,False
+2,PassedOut,304,250,50,True,True,4,2,1,4,2,4,4,4,4,5,3,10,8,True,False,False
+# reached day 3; weapon tier 3 branches 'NM'
+# TÍN HIỆU: ngày liên kết 1/1 (ngày 2+)

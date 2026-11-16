@@ -54,7 +54,7 @@
 #   in any other shape is reported as unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-05"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -123,7 +123,199 @@ items: []
 #   output_range[min, max], added
 # Optional: expression (the actual formula), notes
 
-formulas: []
+formulas:
+  - name: is_night
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    variables:
+      - minute_of_day
+      - segment_start_clock_night
+    output_range: [false, true]
+    expression: "minute_of_day >= offset(segment_start_clock_night), offset(c) = (c - 360 + 1440) mod 1440"
+    notes: "Consumed by Enemy AI (stronger at night), Drops, Audio, Lighting. Night lasts to 06:00."
+    added: 2026-10-25
+    revised: 2026-10-26
+  - name: sleep_target
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    variables:
+      - day_index
+      - minute_of_day
+      - earliest_sleep_clock
+    output_range: [1440, null]
+    expression: "sleep_allowed = minute_of_day >= offset(earliest_sleep_clock); sleep_target = (day_index + 1) * 1440"
+    notes: "F6. Always 06:00 of the next day (= next_dawn); minutes_skipped in [1, 720] at defaults. Consumed by Interaction (bed), Save/Load (Sleep slot)."
+    added: 2026-10-26
+    revised: ""
+  - name: defeat_wake_minute
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    variables:
+      - game_minute
+      - defeat_time_cost_minutes
+      - next_dawn
+    output_range: [game_minute, next_dawn - 1]
+    expression: "min(game_minute + defeat_time_cost_minutes, next_dawn - 1)"
+    notes: "F7. Non-boss defeat only, written via AdvanceBy; never crosses 06:00. Consumed by Defeat & Retry."
+    added: 2026-10-26
+    revised: ""
+  - name: next_occurrence
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    variables:
+      - day_index
+      - game_minute
+      - days_per_season
+      - target_weekday
+      - target_season
+      - target_day_of_season
+      - target_clock
+      - include_today
+    output_range: [0, 112]
+    expression: "F13a next weekday (k <= 7); F13b next season day (k <= 4 * days_per_season); F13c next clock time (within 1440 min)"
+    notes: "F13, guarantees Rule 21 (nothing missed forever). output_range is k in DAYS for F13a/F13b only; F13c returns a game_minute within 1440 minutes of now (different unit). F13b returns Unsupported when seasons_enabled=false. Consumed by Dialogue, Quest, Shops, journal (VS)."
+    added: 2026-10-26
+    revised: 2026-10-26
+  - name: buffer_window_membership
+    status: active
+    source: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md
+      - design/gdd/character-controller.md
+    variables:
+      - action
+      - window
+      - clock
+      - now_real
+      - now_game
+      - epoch_now
+      - buffer_retention
+    output_range: [none, one_record]
+    expression: "eligible(e) = Pressed and not consumed and e.epoch == epoch_now and (e.action == a or e.baseAction == a) and now_clock - e.t_clock <= window and now_real - e.t_real <= buffer_retention; selected = oldest eligible (min seq)"
+    notes: "F1. TryConsume/Peek. Consumers (Character Controller, Fishing) declare window + clock (Real: hit-stop eats the window; Game: hit-stop nearly freezes it). Times are int64 1-us ticks; bounds inclusive. Stamping error <= one frame, always lenient. Character Controller registers Jump 0.12 / DropThrough 0.12 / Attack 0.20 / Dodge 0.15 / Plunge 0.15 s, all Game clock (Rule 28)."
+    added: 2026-10-30
+    revised: 2026-10-31
+  - name: horizontal_reach
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+      - design/gdd/skill-moveset.md
+    variables:
+      - move_speed
+      - T_total
+      - n_dodge
+      - dodge_duration
+      - dodge_distance
+    output_range: [0, 12.62]
+    expression: "R = move_speed * (T_total - n_d * t_d) + n_d * d_dodge"
+    notes: "F3. Base move_speed 6.5. Single jump 5.10 u; jump + dodge at apex 7.90 u; standard chain (jump -> double jump at apex -> air dodge) 11.58 u; skill ceiling 12.62 u. Level-design rule: a required gap <= 0.85 x the reach of the chain it requires (<= 4.3 u jump only; <= 9.8 u with double jump + air dodge); never require coyote. Consumed by level design / map gen, Boss Encounter arenas."
+    added: 2026-10-31
+    revised: ""
+  - name: effective_movement
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+    variables:
+      - move_x
+      - move_speed
+      - speed_modifiers
+      - jump_modifiers
+      - root
+      - attack_move_mult
+    output_range: [1.17, 9.75]
+    expression: "vx = root ? 0 : move.x * move_speed * clamp(prod(s_i), 0.3, 1.5) * m_ctx; v_jump = root ? 0 : jump_speed * sqrt(clamp(prod(j_i), 0.5, 1.2))"
+    notes: "F5. Output range is |vx| in u/s when not rooted. Jump modifiers scale HEIGHT (velocity * sqrt). m_ctx = 0.6 for ground attack / land recovery, 1.0 otherwise, identical for every weapon. Root blocks move/jump/dodge but never attack; root cuts an active dodge (C-10). Speed modifiers never shorten a dodge. Consumed by Elemental & Status (registers modifiers)."
+    added: 2026-10-31
+    revised: ""
+
+  - name: skill_commit_time
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    variables:
+      - t_CancelWindow
+      - recovery_start
+      - default_cancel_lockout
+      - timeline_scale
+    output_range: [0.0167, 1.2]
+    expression: "commit_time = t_CancelWindow (tap branch) | recovery_start + default_cancel_lockout if no CancelWindow | start of dive node; scaled by timeline_scale (slowest of the family band for commit_time_max)"
+    notes: "F2. Seconds from skill Start until dodge may cancel. commit_time_max(family) over normal skills feeds Boss Encounter (vulnerability window >= 1.25 x max, concept P2). No cap on normal-attack commit (user decision 2026-11-05, OQ-S10). Fallback ground 0.13, dash 0.18 s."
+    added: 2026-11-05
+    revised: ""
+  - name: skill_lunge_limits
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    variables:
+      - d_node
+      - t_node
+      - r_node
+      - r_total
+      - r_air
+      - D_dodge
+      - V_dodge
+      - move_speed
+      - attack_move_mult
+    output_range: [0, 6.46]
+    expression: "d_node <= r_node*D_dodge; sum(d_node) <= r_total(kind)*D_dodge; d_node/t_node + move_speed*attack_move_mult <= V_dodge; sum airborne-started d_node per airtime <= r_air*D_dodge (air_lunge_budget)"
+    notes: "F3, game units (C-12): D_dodge 6.46 u, V_dodge 32.3 u/s. Defaults r_node 0.5 (3.23 u), r_total 0.75 normal (4.85 u) / 1.0 special (6.46 u), r_air 0.5 (3.23 u, refills on Landed/Teleport/Respawn). Lunge is ADDED to player control (never replaces). Adds up to R_skill to Controller horizontal_reach (OQ-S8)."
+    added: 2026-11-05
+    revised: ""
+  - name: skill_launch_speed
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    variables:
+      - g
+      - h_launch
+      - r_launch
+      - H_jump
+    output_range: [0, 30.2]
+    expression: "v_launch = sqrt(2*g*h_launch), h_launch <= r_launch*H_jump; only when the node starts grounded"
+    notes: "F5, game units: g 72.4 u/s^2, H_jump = jump_apex_height 6.293 u. Launch from ground only (user decision 2026-11-05) so max height stays Controller jump + double jump; no coyote, no apex hang, jump-cut does not affect it."
+    added: 2026-11-05
+    revised: ""
+  - name: special_cooldown_remaining
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    variables:
+      - cooldown
+      - t_now
+      - t_active_start
+    output_range: [0, 30]
+    expression: "remaining = clamp(cooldown - (t_now - t_active_start), 0, cooldown); Game clock"
+    notes: "F7. t_active_start = first Hit window opening of the last use. One special at a time (one weapon carried, stones swapped at home only). Saved as remaining; reload sets t_active_start = t_now - (cooldown - remaining). Consumed by HUD (remaining/cooldown), Save/Load."
+    added: 2026-11-05
+    revised: ""
+  - name: skill_timeline_scale
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    variables:
+      - t
+      - timeline_scale
+      - scale_band
+    output_range: [0.7, 1.3]
+    expression: "t' = t * timeline_scale for every node time and duration; clip_speed = 1/timeline_scale; lunge distance unchanged"
+    notes: "F9 / Rule 34. Speed axis of the Pillar 2 sidegrade: one XML shared by fast and strong branches. Weapon Tree owns per-branch timeline_scale and per-family scale_band (proposed global 0.7-1.3). Not scaled: hold_max, hold_threshold, link_window, special cooldown. Validator checks bounds at both ends of the family band."
+    added: 2026-11-05
+    revised: ""
 
 # Example:
 #
@@ -156,7 +348,250 @@ formulas: []
 #
 # Required fields: name, status, source, referenced_by, value, unit, added
 
-constants: []
+constants:
+  - name: minutes_per_day
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 1440
+    unit: game_minutes
+    notes: "Constant (Rule 9, F2). game_minute epoch 0 = Day 1 06:00."
+    added: 2026-10-25
+    revised: ""
+  - name: day_start_clock
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: "06:00"
+    unit: clock_time
+    notes: "Day boundary and wake time (Rule 9). 00:00-05:59 belongs to the previous day."
+    added: 2026-10-25
+    revised: ""
+  - name: days_per_season
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 14
+    unit: days
+    notes: "Tuning knob, allowed {7,14,21,28}; 4 seasons/year; seasons_enabled=false until Vertical Slice. Save-breaking after ship (Rule 22)."
+    added: 2026-10-25
+    revised: ""
+  - name: real_seconds_per_game_minute
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 0.75
+    unit: real_seconds
+    notes: "Tuning knob: hard range 0.4-1.5 (validator blocks); design range 0.75-0.9 (one outing per day fits concept's 5-15 min trip, D-1); H1 ceiling 1.0 (warning) (F12)."
+    added: 2026-10-25
+    revised: 2026-10-26
+  - name: max_real_delta_per_frame
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 0.1
+    unit: real_seconds
+    notes: "Tuning knob 0.05-0.25, must be <= real_seconds_per_game_minute; excess real time per frame is dropped, never accumulated (F1, Rule 4)."
+    added: 2026-10-26
+    revised: ""
+  - name: seasons_enabled
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: false
+    unit: bool
+    notes: "false at Fun-Gate and MVP-Complete, true from Vertical Slice (Rule 20). Season/year/day_of_season return None when false; weekday always available."
+    added: 2026-10-26
+    revised: ""
+  - name: earliest_sleep_clock
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: "18:00"
+    unit: clock_time
+    notes: "Tuning knob 12:00-21:00; no latest sleep time (Rule 13)."
+    added: 2026-10-25
+    revised: ""
+  - name: night_start_clock
+    status: deprecated
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: "21:00"
+    unit: clock_time
+    notes: "DEPRECATED 2026-10-26 — renamed to segment_start_clock_night (design-review: there is no separate night_start knob)."
+    added: 2026-10-25
+    revised: 2026-10-26
+  - name: segment_start_clock_night
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: "21:00"
+    unit: clock_time
+    notes: "segment_start_clock[Night] (renamed from night_start_clock 2026-10-26 — there is no separate night_start knob); single source for IsNight (F5); range 20:00-22:00 (was 19:00-22:00; narrowed 2026-10-26 re-review — 19:00 unreachable with Evening 18:00 + MIN_SEGMENT_MINUTES 120)."
+    added: 2026-10-25
+    revised: 2026-10-26
+  - name: min_segment_minutes
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 120
+    unit: game_minutes
+    notes: "Validator constant (not a knob since 2026-10-26 re-review): every non-Night segment >= 120 min (Rule 9, F4). Also bounds AdvanceBy to crossing at most one boundary (defeat cost <= 30)."
+    added: 2026-10-26
+    revised: ""
+  - name: max_game_minute
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 2147480767
+    unit: game_minutes
+    notes: "Design cap = int32 max - 2*1440 (Rule 16): restore rejects above; keeps next_dawn, sleep_target and F13c within int32 whatever type the ADR picks (OQ-1). Save/Load migration must respect it."
+    added: 2026-10-26
+    revised: ""
+  - name: defeat_time_cost_minutes
+    status: active
+    source: design/gdd/game-time-calendar.md
+    referenced_by:
+      - design/gdd/game-time-calendar.md
+    value: 0
+    unit: game_minutes
+    notes: "Tuning knob 0-30 (last resort after non-time costs — Fun-Gate ships a recoverable dropped-materials bag, D-2); non-boss defeat only, clamped to 05:59 (F7, Rule 18). Never applies to boss defeat."
+    added: 2026-10-25
+    revised: 2026-10-26
+  - name: buffer_retention
+    status: active
+    source: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md
+      - design/gdd/character-controller.md
+    value: 1.0
+    unit: real_seconds
+    notes: "Tuning knob 0.5-2.0 (Rule 6, F1, F2). Hard ceiling on every buffered press regardless of a consumer's window; any consumer window (Character Controller jump/dodge/attack buffers, fishing hook window) must fit under it, incl. hit-stop stretch for Game-clock windows (F2). buffer_capacity must be >= ceil(2 * 15 * buffer_retention), power of 2 (32 at 1.0 s)."
+    added: 2026-10-30
+    revised: ""
+  - name: dead_zone
+    status: active
+    source: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md
+    value: 0.2
+    unit: stick_magnitude
+    notes: "Default circular dead zone with rescale (F4); safe range 0.05-0.4, clamped <= 0.4. Settings & Accessibility exposes it and pushes via SetDeadZone (TD-B8). Device-switch stick threshold is max(0.5, dead_zone + 0.15)."
+    added: 2026-10-30
+    revised: ""
+  - name: jump_apex_height
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+      - design/gdd/skill-moveset.md
+    value: 6.293
+    unit: world_units
+    notes: "F1. Full-hold ground jump apex (jump_speed 13, g 31.39, apex hang +0.035). Cut jump min 0.673 u. Airtime 0.784 s. Must clear step_max 2.2 u by >= 0.3 (validator 4) and stay under cave_gap_min 5 u minus collider (validator 3). Consumed by level design / map gen (platforms ~2.1 u, landmark steps <= 2.2 u). World scale C-12 (2026-11-01): 1 u = 1 tile = 16 px; GDD prototype numbers × 30/13 (body 1.3 → 3 u = 48 px)."
+    added: 2026-10-31
+    revised: ""
+  - name: combo_max_height
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+    value: 11.668
+    unit: world_units
+    notes: "F2. Jump + double jump (double_jump_speed 12 -> +2.329 u). Head top 6.356 u (collider_h 1.3). Double jump alone climbs a 2.2 u step. Double jump CAN bonk a 5 u cave ceiling (handled, no stick). Arenas wanting no bonk need ceiling >= ~6.9 u. Consumed by level design, Boss Encounter arenas. World scale C-12 (2026-11-01): 1 u = 1 tile = 16 px; GDD prototype numbers × 30/13 (body 1.3 → 3 u = 48 px)."
+    added: 2026-10-31
+    revised: ""
+  - name: max_fall_speed
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+    value: 36.92
+    unit: world_units_per_second
+    notes: "Rule 3. Fall gravity x1.6 (C-5). Plunge (18 u/s) is exempt and must stay >= 1.1 x max_fall_speed (validator 2). Consumed by Camera (vertical look-ahead), level design. World scale C-12 (2026-11-01): 1 u = 1 tile = 16 px; GDD prototype numbers × 30/13 (body 1.3 → 3 u = 48 px)."
+    added: 2026-10-31
+    revised: ""
+  - name: dodge_cycle
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+    value: 0.55
+    unit: game_seconds
+    notes: "F4. dodge_duration 0.20 + dodge_cooldown 0.35 counted from dodge END (C-7). i-frames cover the whole 0.20 s dodge; max invulnerable fraction when spamming 36.4%; spam travel 5.09 u/s < move_speed 6.5. Consumed by Combat / Boss Encounter: gap between two 'must-dodge' bullet waves >= 0.55 s, else solvable by jump/double jump (validator 12)."
+    added: 2026-10-31
+    revised: ""
+  - name: player_collider_size
+    status: active
+    source: design/gdd/character-controller.md
+    referenced_by:
+      - design/gdd/character-controller.md
+    value: "2.077 x 3.0"
+    unit: world_units
+    notes: "collider_w x collider_h (prototype). Safe 0.8-1.0 x 1.2-1.4. Used by F2 (head clearance), validator 3 and 9 (corner_correction <= collider_w / 4). Consumed by level design (corridor heights), Combat (hurtbox), map gen (cave gaps). World scale C-12 (2026-11-01): 1 u = 1 tile = 16 px; GDD prototype numbers × 30/13 (body 1.3 → 3 u = 48 px)."
+    added: 2026-10-31
+    revised: ""
+
+  - name: hold_threshold
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    value: 0.25
+    unit: game_seconds
+    notes: "F8. Global (every weapon family) minimum hold before a HoldGate counts as a charge; HoldGate node must sit at a delay >= this. Safe 0.15-0.40. Uses Input IsHeld/WasReleasedAfter."
+    added: 2026-11-05
+    revised: ""
+  - name: default_cancel_lockout
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    value: 0.03
+    unit: game_seconds
+    notes: "Rule 9 / F2. Dodge / next attack / plunge open this long after the last Hit window closes when a skill has no CancelWindow node. Prototype value (P) from Character Controller Rule 12. Safe 1/60-0.10."
+    added: 2026-11-05
+    revised: ""
+  - name: dodge_cancel_latest
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    value: 0.15
+    unit: game_seconds
+    notes: "F6. Normal skills must open the dodge CancelWindow no later than recovery_start + this (Controller binding test 5 'never locked'). Safe 0.05-0.25."
+    added: 2026-11-05
+    revised: ""
+  - name: special_cooldown_min
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    value: 8
+    unit: game_seconds
+    notes: "F7. Floor for every special skill cooldown (range 8-30 s). Keeps special from replacing dodge or normal attacks. Safe 4-20."
+    added: 2026-11-05
+    revised: ""
+  - name: special_buffer_window
+    status: active
+    source: design/gdd/skill-moveset.md
+    referenced_by:
+      - design/gdd/skill-moveset.md
+    value: 0.20
+    unit: game_seconds
+    notes: "Rule 20. Input buffer window of the Special action (Game clock), same queue and seq as Attack; to add to Character Controller Rule 28. Validator 8 holds: 0.40 + 0.1995 <= buffer_retention 1.0."
+    added: 2026-11-05
+    revised: ""
 
 # Example:
 #

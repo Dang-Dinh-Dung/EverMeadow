@@ -1,0 +1,5 @@
+# PROTOTYPE - NOT FOR PRODUCTION -- day-loop telemetry
+# written 2026-10-28 23:27:26  session 0.0 min  final=True
+day,end,realSec,secHome,secWilds,visitedWilds,visitedDeep,minHpWilds,potions,meals,fertilizer,forge,planted,harvested,brewed,cooked,slimeKills,bruteKills,ore,bone,linked,farmSkipped,huntSkipped
+# reached day 1; weapon tier 1 branches ''
+# TÍN HIỆU: chờ (tính từ ngày 2)

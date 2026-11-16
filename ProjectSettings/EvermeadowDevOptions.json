@@ -1,0 +1,7 @@
+{
+    "showHitArea": true,
+    "showSearchArea": false,
+    "logSkillTrace": false,
+    "logAiDecisions": false,
+    "showMovesetTester": true
+}

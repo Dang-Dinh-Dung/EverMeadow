@@ -40,7 +40,7 @@
 #   unsupported layout, with its number.
 
 version: 1
-last_updated: ""
+last_updated: "2026-11-06"
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -53,7 +53,39 @@ last_updated: ""
 # interface: how other systems access this state (read-only property, method call,
 #   signal, shared resource, etc.) — this is the contract other ADRs depend on.
 
-state_ownership: []
+state_ownership:
+  - state: time_scale
+    status: active
+    owner_system: frame-clock
+    adr: docs/architecture/adr-0001-input-architecture.md
+    interface: "IFrameClock (read: RealNow, ScaledNow, RealDelta, ScaledDelta, Scale) / ITimeScaleControl.PushScale/PopScale (write: Combat hit-stop with expiring handle, Pause owner)"
+    write_access: "combat and pause owners via ITimeScaleControl only; FrameDriver alone mirrors Time.timeScale"
+    referenced_by:
+      - docs/architecture/adr-0001-input-architecture.md
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+    added: 2026-10-31
+    revised: ""
+  - state: input_mode
+    status: active
+    owner_system: input
+    adr: docs/architecture/adr-0001-input-architecture.md
+    interface: "IInputModes.Push(mode, owner, isAlive) -> ModeHandle / Pop(handle) / IsTop / TopChanged (token stack, barrier on top change)"
+    write_access: "any system via its own handle; only the handle owner can pop"
+    referenced_by:
+      - docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+    revised: ""
+  - state: skill_definitions
+    status: active
+    owner_system: skill-moveset
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    interface: "SkillLibrary.TryGet(id) / SkillLibrary.Select(family, SelectionQuery) / SkillLibrary.Fallback(context) — immutable SkillDef, read-only after boot"
+    write_access: "filled once at the composition root from ISkillTextSource (FolderSkillTextSource over Assets/StreamingAssets/Skills/); no system mutates a SkillDef"
+    referenced_by:
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+      - docs/architecture/adr-0003-skill-authoring-pipeline.md
+    added: 2026-11-06
+    revised: ""
 
 # Example:
 #
@@ -81,7 +113,54 @@ state_ownership: []
 #
 # pattern options: signal | direct_call | event_bus | shared_resource | rpc | none
 
-interfaces: []
+interfaces:
+  - contract: frame_time
+    status: active
+    pattern: direct_call
+    producer: frame-clock
+    consumers:
+      - input
+      - character-controller
+      - combat
+    adr: docs/architecture/adr-0001-input-architecture.md
+    signal_signature: "IFrameClock: long RealNow, ScaledNow, RealDelta, ScaledDelta (1 tick = 1 us); double Scale (min of active scales)"
+    referenced_by:
+      - docs/architecture/adr-0001-input-architecture.md
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+    added: 2026-10-31
+    revised: ""
+  - contract: buffered_input
+    status: active
+    pattern: direct_call
+    producer: input
+    consumers:
+      - character-controller
+      - interaction-context-prompts
+      - menu-navigation
+      - fishing
+    adr: docs/architecture/adr-0001-input-architecture.md
+    signal_signature: "IInputQueries: TryConsume/Peek(InputActionId, windowTicks, ClockKind Real|Scaled, out InputRecord), WasReleasedAfter(action, seq), IsHeld, ReadMove, ReadNavigate, RegisterConsumer"
+    referenced_by:
+      - docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+    revised: ""
+  - contract: skill_definition
+    status: active
+    pattern: direct_call
+    producer: skill-moveset
+    consumers:
+      - character-controller
+      - combat
+      - weapon-tree
+      - skill-stone
+      - loadout
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    signal_signature: "SkillDef (Common[]/Tap[]/Charged[] events, unscaled seconds) + SkillTime.StepsOf/TickOfStep; Controller copies timeline x timeline_scale into a preallocated SkillRun at StartSkill; external data enters validation only through ExternalCatalogs (HitProfiles, AnimKeys, CueIds, SpawnIds, ScaleBands)"
+    referenced_by:
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+      - docs/architecture/adr-0003-skill-authoring-pipeline.md
+    added: 2026-11-06
+    revised: ""
 
 # Example:
 #
@@ -110,7 +189,16 @@ interfaces: []
 # Register a budget when an ADR explicitly claims a frame time allocation.
 # The registry lets /architecture-review verify the total doesn't exceed the target.
 
-performance_budgets: []
+performance_budgets:
+  - system: skill-moveset
+    status: active
+    budget_ms: 0.005
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    notes: "SkillLibrary.Select p99 <= 5 us (ADVISORY); 0 B allocation while a skill runs (600 steps, BLOCKING); full data set (~300 files) cold load <= 150 ms (ADVISORY)"
+    referenced_by:
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+    added: 2026-11-06
+    revised: ""
 
 # Example:
 #
@@ -141,7 +229,58 @@ performance_budgets: []
 # Register an API decision when the choice is non-obvious and other ADRs might
 # make a different choice for the same purpose without knowing this was decided.
 
-api_decisions: []
+api_decisions:
+  - purpose: input_event_processing
+    status: active
+    api: "InputSettings.updateMode = ProcessEventsManually; FrameDriver calls InputSystem.Update() after FrameClock.Advance"
+    not: "ProcessEventsInDynamicUpdate / ProcessEventsInFixedUpdate (dispatch before Update or starved under hit-stop)"
+    adr: docs/architecture/adr-0001-input-architecture.md
+    reason: "Guarantees clock -> input -> gameplay order inside one frame; presses stamped with the current frame's clock"
+    referenced_by:
+      - docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+    revised: ""
+  - purpose: gameplay_time_unit
+    status: active
+    api: "long ticks, 1 tick = 1 microsecond, real source Time.unscaledTimeAsDouble clamped monotonic"
+    not: "float/double seconds or accumulated float counters"
+    adr: docs/architecture/adr-0001-input-architecture.md
+    reason: "Exact boundary compares (Input F1) and floor (Input F5); no drift in long sessions"
+    referenced_by:
+      - docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+    revised: ""
+  - purpose: skill_data_format
+    status: active
+    api: "XML parsed with System.Xml.XmlReader in the noEngineReferences assembly Evermeadow.Core.Skills; loaded once via ISkillTextSource (FolderSkillTextSource reading real .xml files in Assets/StreamingAssets/Skills/)"
+    not: "ScriptableObject skills, JSON, XDocument, Addressables as the only source, reading files after boot"
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    reason: "GDD Skill & Moveset Rule 1-3: every skill is an XML file; the core must unit-test outside Unity and allocate nothing at run time"
+    referenced_by:
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+      - docs/architecture/adr-0003-skill-authoring-pipeline.md
+    added: 2026-11-06
+    revised: ""
+  - purpose: skill_authoring_export
+    status: active
+    api: "Skill Tool EditorWindow (GraphView, Editor-only assembly Evermeadow.Presentation.SkillTool.Editor) opens and saves the skill XML in Assets/StreamingAssets/Skills/ directly through SkillFlow + SkillXmlWriter; saves only files SkillXmlReader accepts, only when bytes change; the build check validates the folder and never writes"
+    not: "Graph assets kept in the project, the Graph Toolkit package, a second XML writer, a build step that writes XML"
+    adr: docs/architecture/adr-0003-skill-authoring-pipeline.md
+    reason: "XML must be in git so changing the authoring tool never loses data (GDD Rule 2, 31); a build that rewrote XML would hide drift"
+    referenced_by:
+      - docs/architecture/adr-0003-skill-authoring-pipeline.md
+    added: 2026-11-06
+    revised: "2026-11-06"
+  - purpose: skill_time_quantization
+    status: active
+    api: "SkillTime.StepsOf(seconds) = ceil(seconds*60 - 1e-6); SkillTime.TickOfStep(steps) = (steps*Ticks.PerSecond + 59)/60; timeline_scale applied before quantizing"
+    not: "Ticks.FromSeconds (rounds to nearest) for skill timestamps; float seconds compares at run time"
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    reason: "Build-time bounds and run-time bounds must agree (GDD Rule 23); 1/60 s is not a whole number of microsecond ticks"
+    referenced_by:
+      - docs/architecture/adr-0002-skill-runtime-data-contract.md
+    added: 2026-11-06
+    revised: ""
 
 # Example:
 #
@@ -167,7 +306,55 @@ api_decisions: []
 # Register a pattern when an ADR explicitly bans it AND other ADRs might
 # unknowingly use it (i.e., it's a tempting but wrong approach for this project).
 
-forbidden_patterns: []
+forbidden_patterns:
+  - pattern: direct_device_read_in_gameplay
+    status: active
+    description: "Gameplay code must not read Keyboard.current, Gamepad.current, Mouse.current, UnityEngine.Input or InputAction directly; only IInputQueries / IInputModes / IInputDevices."
+    why: "Bypasses the buffer, mode barrier and rebinding; breaks GDD Input binding tests 1-3."
+    adr: docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+  - pattern: time_scale_write_outside_frame_driver
+    status: active
+    description: "No system other than FrameDriver writes Time.timeScale; speed changes go through ITimeScaleControl."
+    why: "Two writers desync FrameClock and engine time; leaked hit-stop could lock the game slowed."
+    adr: docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+  - pattern: player_input_or_project_wide_actions
+    status: active
+    description: "Do not use the PlayerInput component, InputSystem.actions (project-wide actions) or the template InputSystem_Actions.inputactions."
+    why: "Global state breaks TD-C with domain reload off; auto scheme switching conflicts with GDD Input Rule 3/13."
+    adr: docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+  - pattern: static_mutable_singleton
+    status: active
+    description: "No static singletons or static mutable state for registries or services; the composition root injects instances and Dispose unregisters everything."
+    why: "Enter Play Mode with domain reload disabled keeps stale static state between plays (TD-C); untestable in isolation."
+    adr: docs/architecture/adr-0001-input-architecture.md
+    added: 2026-10-31
+  - pattern: skill_tool_types_in_runtime_assembly
+    status: active
+    description: "No UnityEditor or GraphView type in a player assembly: the Skill Tool lives only in an Editor-only assembly, and only the XML in Assets/StreamingAssets/Skills/ reaches the build."
+    why: "The authoring tool must never ship or be needed at run time; replacing it must not touch the game."
+    adr: docs/architecture/adr-0003-skill-authoring-pipeline.md
+    added: 2026-11-06
+  - pattern: core_skills_references_combat_or_weapon_tree
+    status: active
+    description: "Evermeadow.Core.Skills references only Foundation.Common and Foundation.Time; Combat, Weapon Tree and other external data enter the validator as injected ExternalCatalogs."
+    why: "Combat depends on the Controller, which depends on Core.Skills: a reference back would create a cycle."
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    added: 2026-11-06
+  - pattern: skill_xml_parse_or_file_read_after_boot
+    status: active
+    description: "Skill XML is parsed and files are read only at load; StartSkill, Select and timeline execution must not parse, read files or allocate."
+    why: "GDD AC-P01/P05: 0 B allocation and no file access while a skill runs."
+    adr: docs/architecture/adr-0002-skill-runtime-data-contract.md
+    added: 2026-11-06
+  - pattern: hand_edit_generated_skill_xml
+    status: active
+    description: "Skill XML is created and edited through the Skill Tool, not by hand; a hand-edited body breaks payload_hash (PayloadHashMismatch: warning when loading in the Editor, build failure in the build check)."
+    why: "One deterministic writer keeps diffs clean and the format exact (GDD Rule 2, 31; user decision 2026-11-06: XML is the only source)."
+    adr: docs/architecture/adr-0003-skill-authoring-pipeline.md
+    added: 2026-11-06
 
 # Example:
 #

@@ -1,0 +1,14 @@
+{
+  "name": "Evermeadow.Foundation.Time",
+  "rootNamespace": "Evermeadow.Foundation.Time",
+  "references": ["Evermeadow.Foundation.Common"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

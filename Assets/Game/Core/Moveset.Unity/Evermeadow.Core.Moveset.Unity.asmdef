@@ -1,0 +1,17 @@
+{
+    "name": "Evermeadow.Core.Moveset.Unity",
+    "rootNamespace": "Evermeadow.Core.Moveset.Unity",
+    "references": [
+        "Evermeadow.Core.Skills",
+        "Evermeadow.Core.Moveset"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

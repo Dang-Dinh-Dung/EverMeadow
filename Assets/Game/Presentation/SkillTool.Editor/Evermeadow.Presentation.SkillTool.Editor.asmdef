@@ -1,0 +1,24 @@
+{
+    "name": "Evermeadow.Presentation.SkillTool.Editor",
+    "rootNamespace": "Evermeadow.Presentation.SkillTool.Editor",
+    "references": [
+        "Evermeadow.Core.Skills",
+        "Evermeadow.Core.Skills.Unity",
+        "Evermeadow.Core.Moveset",
+        "Evermeadow.Core.Moveset.Unity",
+        "Evermeadow.Presentation.SpriteAnimation",
+        "Evermeadow.Presentation.Vfx",
+        "Evermeadow.Presentation.Vfx.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

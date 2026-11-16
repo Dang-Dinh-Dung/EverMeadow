@@ -1,0 +1,19 @@
+{
+    "name": "Evermeadow.Foundation.Input.Unity",
+    "rootNamespace": "Evermeadow.Foundation.Input.Unity",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Foundation.Input",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

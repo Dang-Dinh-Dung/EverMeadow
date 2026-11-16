@@ -1,0 +1,6 @@
+# PROTOTYPE - NOT FOR PRODUCTION -- day-loop telemetry (round 2: world map)
+# written 2026-10-29 23:52:44  session 0.0 min  final=True  worldSeed=20261029
+day,end,wokeAt,sleptAt,maps,wasHome,realSec,secVillage,secWilds,minHpWilds,potions,meals,cropsSold,fertilizer,forge,planted,harvested,brewed,cooked,kills,bosses,ore,bone,gold,chests,portals,fastTravels,linked,farmSkipped,huntSkipped
+1,Defeated,hub,(desert),hub|grass|desert,True,92,16,61,1,1,0,0,0,0,0,0,0,0,8,Sói Chúa Đồng Cỏ,9,10,27,2,2,0,False,False,False
+# reached day 2; weapon tier 1 branches ''; bosses down: grass; far village found day -1
+# TÍN HIỆU: chờ (tính từ ngày 2)

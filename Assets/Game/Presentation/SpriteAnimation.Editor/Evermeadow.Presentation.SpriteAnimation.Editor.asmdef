@@ -1,0 +1,21 @@
+{
+    "name": "Evermeadow.Presentation.SpriteAnimation.Editor",
+    "rootNamespace": "Evermeadow.Presentation.SpriteAnimation.Editor",
+    "references": [
+        "Evermeadow.Presentation.SpriteAnimation",
+        "Evermeadow.Presentation.SpriteAnimation.Unity",
+        "Evermeadow.Presentation.CharacterAnimation",
+        "Evermeadow.Core.CharacterController"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

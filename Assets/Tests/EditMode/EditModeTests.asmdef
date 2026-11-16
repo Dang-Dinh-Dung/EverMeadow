@@ -1,0 +1,34 @@
+{
+  "name": "EditModeTests",
+  "references": [
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner",
+    "Evermeadow.Foundation.Common",
+    "Evermeadow.Foundation.Time",
+    "Evermeadow.Foundation.Input",
+    "Unity.InputSystem",
+    "Evermeadow.Foundation.Input.Unity",
+    "Evermeadow.Core.CharacterController",
+    "Evermeadow.Core.Skills",
+    "Evermeadow.Core.Moveset",
+    "Evermeadow.Core.AI",
+    "Evermeadow.Presentation.CharacterAnimation",
+    "Evermeadow.Presentation.SpriteAnimation",
+    "Evermeadow.Presentation.SpriteAnimation.Unity",
+    "Evermeadow.Presentation.SpriteAnimation.Editor",
+    "Evermeadow.Presentation.Menus",
+    "Evermeadow.Presentation.Settings.Unity",
+    "Evermeadow.Presentation.Vfx"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ]
+}

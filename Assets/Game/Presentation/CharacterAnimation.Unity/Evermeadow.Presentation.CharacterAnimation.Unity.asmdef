@@ -1,0 +1,22 @@
+{
+    "name": "Evermeadow.Presentation.CharacterAnimation.Unity",
+    "rootNamespace": "Evermeadow.Presentation.CharacterAnimation.Unity",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Core.CharacterController",
+        "Evermeadow.Core.CharacterController.Unity",
+        "Evermeadow.Presentation.CharacterAnimation",
+        "Evermeadow.Presentation.SpriteAnimation",
+        "Evermeadow.Presentation.SpriteAnimation.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

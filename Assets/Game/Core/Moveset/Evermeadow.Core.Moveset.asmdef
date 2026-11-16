@@ -1,0 +1,17 @@
+{
+    "name": "Evermeadow.Core.Moveset",
+    "rootNamespace": "Evermeadow.Core.Moveset",
+    "references": [
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Core.Skills"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

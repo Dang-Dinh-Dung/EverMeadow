@@ -1,0 +1,31 @@
+{
+  "name": "PlayModeTests",
+  "references": [
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner",
+    "Unity.InputSystem",
+    "Unity.InputSystem.TestFramework",
+    "Evermeadow.Foundation.Common",
+    "Evermeadow.Foundation.Time",
+    "Evermeadow.Foundation.Input",
+    "Evermeadow.Foundation.Input.Unity",
+    "Evermeadow.Core.CharacterController",
+    "Evermeadow.Core.CharacterController.Unity",
+    "Evermeadow.Presentation.CharacterAnimation",
+    "Evermeadow.Presentation.CharacterAnimation.Unity",
+    "Evermeadow.Presentation.SpriteAnimation",
+    "Evermeadow.Presentation.SpriteAnimation.Unity",
+    "Evermeadow.Presentation.Menus",
+    "Evermeadow.Presentation.Menus.Unity",
+    "Evermeadow.Presentation.Settings.Unity"
+  ],
+  "includePlatforms": [],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ]
+}

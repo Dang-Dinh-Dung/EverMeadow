@@ -1,0 +1,16 @@
+{
+    "name": "Evermeadow.Core.Skills.Unity",
+    "rootNamespace": "Evermeadow.Core.Skills.Unity",
+    "references": [
+        "Evermeadow.Core.Skills"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

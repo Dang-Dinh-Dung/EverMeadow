@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<moveset schema_version="1" name="Normal Slash" weapons="any">
+  <note>Chém thường</note>
+  <row input="Button1" skill="100001" priority="1" />
+  <row input="Button1" skill="100000" after="100001" link_window="0.5" priority="2" />
+</moveset>

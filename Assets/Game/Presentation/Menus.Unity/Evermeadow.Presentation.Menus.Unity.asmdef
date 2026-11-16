@@ -1,0 +1,21 @@
+{
+    "name": "Evermeadow.Presentation.Menus.Unity",
+    "rootNamespace": "Evermeadow.Presentation.Menus.Unity",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Foundation.Input",
+        "Evermeadow.Foundation.Input.Unity",
+        "Evermeadow.Presentation.Menus",
+        "Evermeadow.Presentation.Settings.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

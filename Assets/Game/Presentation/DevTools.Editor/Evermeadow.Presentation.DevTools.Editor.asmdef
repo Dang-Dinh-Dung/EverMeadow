@@ -1,0 +1,28 @@
+{
+    "name": "Evermeadow.Presentation.DevTools.Editor",
+    "rootNamespace": "Evermeadow.Presentation.DevTools.Editor",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Input.Unity",
+        "Evermeadow.Core.CharacterController.Unity",
+        "Evermeadow.Presentation.CharacterAnimation.Unity",
+        "Evermeadow.Presentation.DevTools",
+        "Evermeadow.Core.CharacterController",
+        "Evermeadow.Presentation.SpriteAnimation",
+        "Evermeadow.Presentation.SpriteAnimation.Unity",
+        "Evermeadow.Core.Skills",
+        "Evermeadow.Presentation.Creatures.Unity",
+        "Evermeadow.Presentation.SkillTool.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

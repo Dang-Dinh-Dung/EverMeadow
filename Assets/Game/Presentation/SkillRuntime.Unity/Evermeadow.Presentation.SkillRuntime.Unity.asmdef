@@ -1,0 +1,21 @@
+{
+    "name": "Evermeadow.Presentation.SkillRuntime.Unity",
+    "rootNamespace": "Evermeadow.Presentation.SkillRuntime.Unity",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Core.Skills",
+        "Evermeadow.Core.CharacterController",
+        "Evermeadow.Presentation.Vfx",
+        "Evermeadow.Presentation.Vfx.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skill schema_version="2" owner="player">
+  <meta payload_hash="0b7d6216e548cfc4984af93ba47540c662d4190df45366f3c5c31063f77261ac"/>
+  <node id="0" type="Start" x="-286" y="0"/>
+  <node id="1" type="Animation" x="50" y="0">
+    <f n="AnimationType" v="attack1"/>
+  </node>
+  <node id="2" type="Effect" x="50" y="265">
+    <f n="PrefabName" v="sword_slashj_1"/>
+    <f n="PivotCreatureGID" ref="0.OwnerGID"/>
+    <f n="PivotOffset" v="2,-2,0"/>
+  </node>
+  <node id="3" type="Hit" x="474" y="0">
+    <f n="SubValue" v="180,3,10"/>
+  </node>
+  <node id="4" type="End" x="474" y="-214"/>
+  <link from="0" to="1" when="start"/>
+  <link from="1" to="2" when="start"/>
+  <link from="1" to="4" when="end"/>
+  <link from="2" to="3" when="start"/>
+</skill>

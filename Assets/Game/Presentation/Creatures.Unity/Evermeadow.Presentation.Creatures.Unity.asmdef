@@ -1,0 +1,21 @@
+{
+    "name": "Evermeadow.Presentation.Creatures.Unity",
+    "rootNamespace": "Evermeadow.Presentation.Creatures.Unity",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time",
+        "Evermeadow.Core.Skills",
+        "Evermeadow.Core.AI",
+        "Evermeadow.Presentation.SpriteAnimation",
+        "Evermeadow.Presentation.SkillRuntime.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

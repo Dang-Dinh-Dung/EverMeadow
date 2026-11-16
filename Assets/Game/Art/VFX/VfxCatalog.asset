@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09858359f193cd8438463ca60ef14442, type: 3}
+  m_Name: VfxCatalog
+  m_EditorClassIdentifier: Evermeadow.Presentation.Vfx.Unity::Evermeadow.Presentation.Vfx.VfxCatalog
+  _entries:
+  - Key: sword_slashj_1
+    Category: 0
+    Prefab: {fileID: 1361408062350063232, guid: bca6eb0bf5fe75a418f3e6e0b6f55646, type: 3}
+    Path: Assets/Game/Art/VFX/Slash/sword_slashj_1.prefab
+  - Key: sword_slashj_2
+    Category: 0
+    Prefab: {fileID: 1361408062350063232, guid: fe72060b6d1214b4cbe5ae2c2f4a1f27, type: 3}
+    Path: Assets/Game/Art/VFX/Slash/sword_slashj_2.prefab

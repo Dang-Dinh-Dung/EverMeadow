@@ -1,0 +1,7 @@
+# PROTOTYPE - NOT FOR PRODUCTION -- day-loop telemetry (round 3: free maps, branches, fishing)
+# written 2026-10-30 21:46:57  session 0.0 min  final=True  worldSeed=20261029
+day,end,wokeAt,sleptAt,maps,wasHome,realSec,secVillage,secWilds,minHpWilds,potions,meals,grilledFish,cropsSold,fertilizer,forge,planted,harvested,brewed,cooked,kills,bosses,ore,bone,gold,chests,branches,fastTravels,fishCaught,fishLost,fishSec,fishCooked,fishSold,unlocks,linked,farmSkipped,huntSkipped
+1,Defeated,hub,(grass),hub|grass,True,380,220,31,1,0,0,0,0,0,0,4,0,0,0,2,,1,5,2,1,1,0,1,0,15,0,0,,False,False,False
+2,Defeated,hub,(grass),hub|grass,True,70,38,28,3,1,0,0,0,4,0,4,4,9,0,2,,1,2,4,0,1,0,0,0,0,1,0,,True,False,False
+# reached day 3; weapon tier 1 branches ''; bosses down: grass; paths open: grass-desert; fish species: Cá trê; far village found day -1
+# TÍN HIỆU: ngày liên kết 1/1 (ngày 2+)

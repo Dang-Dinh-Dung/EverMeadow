@@ -1,0 +1,17 @@
+{
+    "name": "Evermeadow.Presentation.SpriteAnimation",
+    "rootNamespace": "Evermeadow.Presentation.SpriteAnimation",
+    "references": [
+        "Evermeadow.Foundation.Common",
+        "Evermeadow.Foundation.Time"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
